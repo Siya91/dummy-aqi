@@ -3,6 +3,7 @@ import type { ThemeMode, AppRoute, PortalSection } from '@/types';
 import Navbar from '@/components/Navbar';
 import PortalScreen from '@/screens/PortalScreen';
 import LandingScreen from '@/screens/LandingScreen';
+import DemoTour from '@/components/DemoTour';
 import '@/lib/leafletSetup';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<PortalSection>('dashboard');
   const [scrollTarget, setScrollTarget] = useState<PortalSection | null>(null);
+  const [demoActive, setDemoActive] = useState(false);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -43,6 +45,18 @@ function App() {
     setScrollTarget(null);
   }, []);
 
+  const handleDemoNavigate = useCallback((section: PortalSection) => {
+    setScrollTarget(section);
+  }, []);
+
+  const startDemo = () => {
+    setDemoActive(true);
+  };
+
+  const closeDemo = () => {
+    setDemoActive(false);
+  };
+
   if (route === 'landing') {
     return <LandingScreen onLaunch={launchApp} />;
   }
@@ -55,8 +69,9 @@ function App() {
         theme={theme}
         onToggleTheme={toggleTheme}
         onGoHome={goHome}
+        onStartDemo={startDemo}
       />
-      <main className="flex-1">
+      <main className={`flex-1 ${demoActive ? 'pb-44' : ''}`}>
         <PortalScreen
           selectedId={selectedId}
           onSelect={setSelectedId}
@@ -66,6 +81,11 @@ function App() {
           onScrollTargetHandled={handleScrollTargetHandled}
         />
       </main>
+      <DemoTour
+        active={demoActive}
+        onClose={closeDemo}
+        onNavigate={handleDemoNavigate}
+      />
     </div>
   );
 }

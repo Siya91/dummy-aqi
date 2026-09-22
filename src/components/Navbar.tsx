@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Satellite, LayoutDashboard, MapPin, Flame, Radio, TrendingUp, FileText, Info, Sun, Moon, Home, Menu, X } from 'lucide-react';
+import { Satellite, LayoutDashboard, MapPin, Flame, Radio, TrendingUp, FileText, Info, Sun, Moon, Home, Menu, X, PlayCircle } from 'lucide-react';
 import type { PortalSection, ThemeMode } from '@/types';
 
 interface NavbarProps {
@@ -8,6 +8,7 @@ interface NavbarProps {
   theme: ThemeMode;
   onToggleTheme: () => void;
   onGoHome: () => void;
+  onStartDemo: () => void;
 }
 
 const TABS: { id: PortalSection; label: string; icon: typeof LayoutDashboard }[] = [
@@ -20,7 +21,7 @@ const TABS: { id: PortalSection; label: string; icon: typeof LayoutDashboard }[]
   { id: 'about', label: 'About', icon: Info },
 ];
 
-export default function Navbar({ activeSection, onSectionClick, theme, onToggleTheme, onGoHome }: NavbarProps) {
+export default function Navbar({ activeSection, onSectionClick, theme, onToggleTheme, onGoHome, onStartDemo }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleTabClick = (section: PortalSection) => {
@@ -78,6 +79,17 @@ export default function Navbar({ activeSection, onSectionClick, theme, onToggleT
 
         {/* Right controls */}
         <div className="flex items-center gap-1.5">
+          {/* Start Demo button */}
+          <button
+            onClick={onStartDemo}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:opacity-90"
+            style={{ background: 'linear-gradient(135deg, #ff4444, #ff8800)' }}
+            title="Start guided demo tour"
+          >
+            <PlayCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">Demo</span>
+          </button>
+
           <button
             onClick={onGoHome}
             className="p-2 rounded-lg text-blue-200 hover:text-white hover:bg-white/10 transition-colors"
@@ -106,6 +118,19 @@ export default function Navbar({ activeSection, onSectionClick, theme, onToggleT
       {/* Mobile menu */}
       {mobileMenuOpen && (
         <nav className="lg:hidden border-t px-4 py-3 space-y-1" style={{ borderColor: '#1a3a6a', background: '#0a1a3a' }}>
+          {/* Mobile demo button */}
+          <button
+            onClick={() => {
+              onStartDemo();
+              setMobileMenuOpen(false);
+            }}
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-md text-sm font-semibold text-white mb-1"
+            style={{ background: 'linear-gradient(135deg, #ff4444, #ff8800)' }}
+          >
+            <PlayCircle className="w-4 h-4" />
+            Start Guided Demo
+          </button>
+
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeSection === tab.id;
