@@ -84,6 +84,15 @@ export interface PredictedArea {
 
 export type ScreenTab = 'dashboard' | 'predictions' | 'plume';
 
+export type PortalSection =
+  | 'dashboard'
+  | 'live-aqi-map'
+  | 'hotspot-analysis'
+  | 'satellite-data'
+  | 'predictions'
+  | 'reports'
+  | 'about';
+
 export interface FactorBreakdown {
   label: string;
   percentage: number;

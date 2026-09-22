@@ -1,19 +1,17 @@
-import { useState, useEffect } from 'react';
-import type { ScreenTab, ThemeMode, AppRoute } from '@/types';
+import { useState, useEffect, useCallback } from 'react';
+import type { ThemeMode, AppRoute, PortalSection } from '@/types';
 import Navbar from '@/components/Navbar';
-import DashboardScreen from '@/screens/DashboardScreen';
-import PredictionsScreen from '@/screens/PredictionsScreen';
-import PlumeTrackerScreen from '@/screens/PlumeTrackerScreen';
+import PortalScreen from '@/screens/PortalScreen';
 import LandingScreen from '@/screens/LandingScreen';
 import '@/lib/leafletSetup';
 
 function App() {
   const [route, setRoute] = useState<AppRoute>('landing');
-  const [activeTab, setActiveTab] = useState<ScreenTab>('dashboard');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [theme, setTheme] = useState<ThemeMode>('dark');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState<PortalSection>('dashboard');
+  const [scrollTarget, setScrollTarget] = useState<PortalSection | null>(null);
 
-  // Apply theme class to <html>
   useEffect(() => {
     const html = document.documentElement;
     if (theme === 'light') {
@@ -37,6 +35,14 @@ function App() {
     setRoute('app');
   };
 
+  const handleSectionClick = useCallback((section: PortalSection) => {
+    setScrollTarget(section);
+  }, []);
+
+  const handleScrollTargetHandled = useCallback(() => {
+    setScrollTarget(null);
+  }, []);
+
   if (route === 'landing') {
     return <LandingScreen onLaunch={launchApp} />;
   }
@@ -44,27 +50,21 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--airsense-bg)' }}>
       <Navbar
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
+        activeSection={activeSection}
+        onSectionClick={handleSectionClick}
         theme={theme}
         onToggleTheme={toggleTheme}
         onGoHome={goHome}
       />
-
-      <main className="flex-1 overflow-hidden">
-        {activeTab === 'dashboard' && (
-          <DashboardScreen
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-          />
-        )}
-        {activeTab === 'predictions' && (
-          <PredictionsScreen
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-          />
-        )}
-        {activeTab === 'plume' && <PlumeTrackerScreen />}
+      <main className="flex-1">
+        <PortalScreen
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+          activeSection={activeSection}
+          onActiveSectionChange={setActiveSection}
+          scrollTarget={scrollTarget}
+          onScrollTargetHandled={handleScrollTargetHandled}
+        />
       </main>
     </div>
   );
